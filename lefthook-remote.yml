@@ -1,0 +1,5 @@
+---
+pre-push:
+  commands:
+    tdd-order-rspec:
+      run: timeout ${LEFTHOOK_TDD_ORDER_RSPEC_TIMEOUT:-30} lefthook-tdd-order-rspec
