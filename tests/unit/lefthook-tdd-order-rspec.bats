@@ -34,7 +34,7 @@ make_app_without_spec() {
 
 @test "no commits exits 0" {
     cd "$TMP/repo" || return
-    # shellcheck disable=SC2030
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="HEAD"
     run lefthook-tdd-order-rspec
     assert_success
@@ -43,9 +43,9 @@ make_app_without_spec() {
 @test "ALLOW_GAP=1 exits 0" {
     cd "$TMP/repo" || return
     make_app_without_spec
-    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="HEAD~1"
-    # shellcheck disable=SC2030
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_ALLOW_GAP=1
     run lefthook-tdd-order-rspec
     assert_success
@@ -54,7 +54,7 @@ make_app_without_spec() {
 @test "app file with matching spec passes" {
     cd "$TMP/repo" || return
     make_app_with_spec
-    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="HEAD~1"
     run lefthook-tdd-order-rspec
     assert_success
@@ -63,7 +63,7 @@ make_app_without_spec() {
 @test "app file without matching spec fails" {
     cd "$TMP/repo" || return
     make_app_without_spec
-    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="HEAD~1"
     run lefthook-tdd-order-rspec
     assert_failure
@@ -77,7 +77,7 @@ make_app_without_spec() {
     echo "class ApplicationController; end" > app/controllers/application_controller.rb
     git add -A
     git commit -m "add application_controller" >/dev/null 2>&1
-    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="HEAD~1"
     run lefthook-tdd-order-rspec
     assert_success
@@ -90,7 +90,7 @@ make_app_without_spec() {
     echo "app/models/baz.rb" > .structural-spec-allowlist
     git add -A
     git commit -m "add allowlisted baz" >/dev/null 2>&1
-    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="HEAD~1"
     run lefthook-tdd-order-rspec
     assert_success
@@ -103,7 +103,7 @@ make_app_without_spec() {
     echo "RSpec.describe 'foos'" > spec/requests/foos_spec.rb
     git add -A
     git commit -m "add controller with request spec" >/dev/null 2>&1
-    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="HEAD~1"
     run lefthook-tdd-order-rspec
     assert_success
@@ -112,7 +112,7 @@ make_app_without_spec() {
 @test "base ref not found exits 0" {
     cd "$TMP/repo" || return
     make_app_without_spec
-    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="origin/nonexistent"
     run lefthook-tdd-order-rspec
     assert_success
@@ -126,7 +126,7 @@ make_app_without_spec() {
     echo "$baseline_sha" > .tdd-order-baseline
     git add .tdd-order-baseline
     git commit --amend --no-edit >/dev/null 2>&1
-    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030,SC2031
     export LEFTHOOK_TDD_ORDER_BASE_REF="HEAD~2"
     run lefthook-tdd-order-rspec
     assert_success
