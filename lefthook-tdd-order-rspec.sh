@@ -32,42 +32,6 @@ if [ "${#commits[@]}" -eq 0 ]; then
     exit 0
 fi
 
-SKIP_FILES=(
-    "app/controllers/application_controller.rb"
-    "app/models/application_record.rb"
-    "app/mailers/application_mailer.rb"
-    "app/helpers/application_helper.rb"
-    "app/jobs/application_job.rb"
-    "app/models/current.rb"
-)
-
-declare -A allowlisted=()
-if [ -f .structural-spec-allowlist ]; then
-    while IFS= read -r line; do
-        line="${line%%#*}"
-        line="$(echo "$line" | xargs)"
-        [ -z "$line" ] && continue
-        allowlisted["$line"]=1
-    done <.structural-spec-allowlist
-fi
-
-is_skipped() {
-    local f="$1"
-    case "$f" in
-        app/controllers/concerns/*) return 0 ;;
-        app/channels/application_cable/*) return 0 ;;
-        app/views/layouts/*) return 0 ;;
-    esac
-    for s in "${SKIP_FILES[@]}"; do
-        [ "$f" = "$s" ] && return 0
-    done
-    case "$f" in
-        app/controllers/*/base_controller.rb) return 0 ;;
-    esac
-    [ -n "${allowlisted[$f]:-}" ] && return 0
-    return 1
-}
-
 spec_path_for() {
     local f="$1"
     case "$f" in
@@ -87,7 +51,7 @@ failed=0
 for c in "${commits[@]}"; do
     while IFS= read -r f; do
         [ -n "$f" ] || continue
-        is_skipped "$f" && continue
+        bash @IS_SKIPPED_PATH@ "$f" && continue
 
         spec="$(spec_path_for "$f")"
         [ -z "$spec" ] && continue
