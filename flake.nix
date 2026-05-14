@@ -37,15 +37,30 @@
     in
     {
       packages = forAllSystems (pkgs: {
-        default = pkgs.writeShellApplication {
-          name = "lefthook-tdd-order-rspec";
-          runtimeInputs = [
-            pkgs.git
-            pkgs.coreutils
-            pkgs.gnused
-          ];
-          text = builtins.readFile ./lefthook-tdd-order-rspec.sh;
-        };
+        default =
+          let
+            isSkipped = pkgs.writeText "is-skipped.sh" (builtins.readFile ./is-skipped.sh);
+            specPathFor = pkgs.writeText "spec-path-for.sh" (builtins.readFile ./spec-path-for.sh);
+          in
+          pkgs.writeShellApplication {
+            name = "lefthook-tdd-order-rspec";
+            runtimeInputs = [
+              pkgs.git
+              pkgs.coreutils
+              pkgs.gnused
+            ];
+            text =
+              builtins.replaceStrings
+                [
+                  "@IS_SKIPPED_PATH@"
+                  "@SPEC_PATH_FOR_PATH@"
+                ]
+                [
+                  "${isSkipped}"
+                  "${specPathFor}"
+                ]
+                (builtins.readFile ./lefthook-tdd-order-rspec.sh);
+          };
       });
 
       devShells = forAllSystems (
